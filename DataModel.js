@@ -1,30 +1,26 @@
 const mongoose = require("mongoose");
 
-const StudentSchema = new mongoose.Schema({
+const PropertySchema = new mongoose.Schema({
     name: {
         type: String,
         required: true
     },
-    class: {
+    address: {
         type: String,
         required: true
     },
-    rollNo: {
+    phnnumber: {
+        type: Number,
+        required: true
+    },
+    description: {
         type: String,
         required: true
     },
-    yearOfStudying: {
-        type: String,
-        required: true
-    },
-    mobileNo: {
-        type: String,
-        required: true
-    },
-    emailId: {
-        type: String,
+    price: {
+        type: Number,
         required: true
     }
 });
 
-module.exports = mongoose.model("Student", StudentSchema);
+module.exports = mongoose.model("Property", PropertySchema);

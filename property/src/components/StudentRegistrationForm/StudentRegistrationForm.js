@@ -4,16 +4,15 @@ import axios from 'axios';
 const StudentRegistrationForm = () => {
  const initialState = {
   name: '',
-  class: '',
-  rollNo: '',
-  yearOfStudying: '',
-  mobileNo: '',
-  emailId: ''
+  address: '',
+  phnnumber: 0,
+  description: '',
+  price: 0
  };
 
  const [formData, setFormData] = useState(initialState);
 
- const { name, class: studentClass, rollNo, yearOfStudying, mobileNo, emailId } = formData;
+ const { name, address , phnnumber, description, price } = formData;
 
  const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -32,28 +31,24 @@ const StudentRegistrationForm = () => {
  return (
   <form onSubmit={onSubmit}>
    <div>
-    <label>Name:</label>
+    <label>Property Name:</label>
     <input type="text" name="name" value={name} onChange={onChange} required />
    </div>
    <div>
-    <label>Class:</label>
-    <input type="text" name="class" value={studentClass} onChange={onChange} required />
+    <label>Address:</label>
+    <input type="text" name="address" value={address} onChange={onChange} required />
    </div>
    <div>
-    <label>Roll No:</label>
-    <input type="text" name="rollNo" value={rollNo} onChange={onChange} required />
+    <label>Phn number:</label>
+    <input type="number" name="phnnumber" value={phnnumber} onChange={onChange} required />
    </div>
    <div>
-    <label>Year of Studying:</label>
-    <input type="text" name="yearOfStudying" value={yearOfStudying} onChange={onChange} required />
+    <label>Description:</label>
+    <input type="text" name="description" value={description} onChange={onChange} required />
    </div>
    <div>
-    <label>Mobile No:</label>
-    <input type="text" name="mobileNo" value={mobileNo} onChange={onChange} required />
-   </div>
-   <div>
-    <label>Email ID:</label>
-    <input type="email" name="emailId" value={emailId} onChange={onChange} required />
+    <label>Price:</label>
+    <input type="number" name="price" value={price} onChange={onChange} required />
    </div>
    <button type="submit">Register</button>
   </form>

@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const connectDB = require('./Database');
-const Student = require('./DataModel'); 
+const Property = require('./DataModel'); 
 
 const app = express();
 connectDB();
@@ -15,14 +15,13 @@ app.get('/readfromserver', (req, res) => {
 
 app.post('/writetodatabase', async (req, res) => {
   try {
-    const { name, class: studentClass, rollNo, yearOfStudying, mobileNo, emailId } = req.body;
+    const { name, address , phnnumber , description , price} = req.body;
     const newStudent = new Student({ 
       name, 
-      class: studentClass, 
-      rollNo, 
-      yearOfStudying, 
-      mobileNo, 
-      emailId 
+      address, 
+      phnnumber, 
+      description, 
+      price
     });
     await newStudent.save();
     res.json({ message: 'Data saved successfully ' });
