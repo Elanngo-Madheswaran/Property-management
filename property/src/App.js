@@ -1,13 +1,18 @@
 import React from 'react';
-import StudentRegistrationForm from './components/StudentRegistrationForm/PropertyRegistrationForm';
+import PropertyRegistrationForm from './components/PropertyRegistrationForm/PropertyRegistrationForm';
+import PropertyList from './components/property_list/property_list';
 
 function App() {
   return (
-    <div className="App">
+    <div className="App text-center m-3">
       <header className="App-header">
         <h1>Property Registration</h1>
-          <StudentRegistrationForm />
+        <PropertyRegistrationForm />
       </header>
+      <div className='container m-5 text-center'>
+      <h1>Property list</h1>
+      <PropertyList />
+    </div>
     </div>
  );
 }
