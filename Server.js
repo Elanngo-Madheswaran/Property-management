@@ -16,14 +16,14 @@ app.get('/readfromserver', (req, res) => {
 app.post('/writetodatabase', async (req, res) => {
   try {
     const { name, address , phnnumber , description , price} = req.body;
-    const newStudent = new Student({ 
+    const newProperty = new Property({ 
       name, 
       address, 
       phnnumber, 
       description, 
       price
     });
-    await newStudent.save();
+    await newProperty.save();
     res.json({ message: 'Data saved successfully ' });
   } catch (error) {
     console.error( error.message);
