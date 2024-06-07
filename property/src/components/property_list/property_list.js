@@ -1,33 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const PropertyList = () => {
-  const [properties, setProperties] = useState([]);
+const PropertyList = ({ onEdit, onDelete }) => {
+  const [properties, setProperties] = useState({});
 
   useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const res = await axios.get('https://ap-south-1.aws.data.mongodb-api.com/app/data-jqrtjox/endpoint/data/v1'); // Adjust the API endpoint
-        setProperties(res.data); // Assuming the response contains an array of properties
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      }
-    };
-
     fetchProperties();
   }, []);
 
+  const fetchProperties = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/writetodatabase');
+      setProperties(response.data);
+    } catch (error) {
+      console.error('Error fetching Properties', error);
+    }
+  };
+
   return (
-    <div className="property-list">
-      {properties.map((property) => (
-        <div key={property.id} className="property-box">
-          <h3>{property.name}</h3>
-          <p>Address: {property.address}</p>
-          <p>Phone Number: {property.phnnumber}</p>
-          <p>Description: {property.description}</p>
-          <p>Price: ${property.price}</p>
-        </div>
-      ))}
+    <div>
+      <ul>
+        {properties.map(property => (
+          <li key={property._id}>
+            {property.name}
+            <button onClick={() => onEdit(property)}>Edit</button>
+            <button onClick={() => onDelete(property._id)}>Delete</button>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
