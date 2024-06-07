@@ -1,60 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const PropertyRegistrationForm = () => {
- const initialState = {
-  name: '',
-  address: '',
-  phnnumber: 0,
-  description: '',
-  price: 0
- };
+const PropertyForm = ({ PropertyToEdit, onSave }) => {
+  const [property, setProperty] = useState({
+    name: '',
+    address: '',
+    phnnumber: 0,
+    description: '',
+    price: 0,
+    img:''
+  });
 
- const [formData, setFormData] = useState(initialState);
+  useEffect(() => {
+    if (PropertyToEdit) {
+      setProperty(PropertyToEdit);
+    }
+  }, [PropertyToEdit]);
 
- const { name, address , phnnumber, description, price } = formData;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setProperty(prevState => ({
+      ...prevState,
+      [name]: value
+    }));
+  };
 
- const onChange = e => setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
- const onSubmit = async e => {
-  e.preventDefault();
-  try {
-   const res = await axios.post('http://localhost:5000/writetodatabase', formData);
-   alert(res.data.message);
-   setFormData(initialState); // Reset form after successful submission
-  } catch (err) {
-   console.error('Server error', err);
-   alert('Server error while saving data');
-  }
- };
+    try {
+      if (property._id) {
+        await axios.put(`http://localhost:5000/property/${property._id}`, property);
+      } else {
+        await axios.post('http://localhost:5000/property', property);
+      }
 
- return (
-  <form onSubmit={onSubmit} className='text-center m-3'>
-    <div className='d-flex'>
-        <div>
-            <label>Property Name:</label>
-            <input type="text" name="name" value={name} onChange={onChange} required />
-        </div>
-        <div>
-            <label>Address:</label>
-            <input type="text" name="address" value={address} onChange={onChange} required />
-        </div>
-        <div>
-            <label>Phn number:</label>
-            <input type="number" name="phnnumber" value={phnnumber} onChange={onChange} required />
-        </div>
-        <div>
-            <label>Description:</label>
-            <input type="text" name="description" value={description} onChange={onChange} required />
-        </div>
-        <div>
-            <label>Price:</label>
-            <input type="number" name="price" value={price} onChange={onChange} required />
-        </div>
+      onSave();
+      setProperty({
+        name: '',
+        address: '',
+        phnnumber: 0,
+        description: '',
+        price: 0,
+        img:''
+      });
+    } catch (error) {
+      console.error('Error saving Property', error);
+    }
+  };
+
+  return (
+    <div className='m-5 p-5'>
+      <h2>{property._id ? 'Edit Property' : 'Add Property'}</h2>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          name="name"
+          placeholder="Name"
+          value={property.name}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="address"
+          value={property.address}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="number"
+          name="phnnumber"
+          placeholder="phn no"
+          value={property.phnnumber}
+          onChange={handleChange}
+          required
+        />
+        <input
+          type="text"
+          name="description"
+          placeholder="description"
+          value={property.description}
+          onChange={handleChange}
+          
+        />
+        <input
+          type="number"
+          name="price"
+          placeholder="Price"
+          value={property.price}
+          onChange={handleChange}
+          required
+        />
+        <button type="submit">Save</button>
+      </form>
     </div>
-    <button className='btn btn-secondary btn-lg m-5' type="submit">Register</button>
-  </form>
- );
+  );
 };
 
-export default PropertyRegistrationForm;
+export default PropertyForm;
