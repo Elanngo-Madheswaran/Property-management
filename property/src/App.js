@@ -27,8 +27,8 @@ const App = () => {
     <div className="App text-center bg bg-success bg-opacity-50">
       <h1 className='p-5'>Property Management System</h1>
       <hr></hr>
-      <h1 className='m-5 p-5'>List of Properties</h1>
-      <div className='m-5 d-flex align-items-center justify-content-center'>
+      <h1 className='mt-4'>List of Properties</h1>
+      <div className='mt-5 d-flex align-items-center justify-content-center'>
           <PropertyList onEdit={handleEdit} onDelete={handleDelete} />
       </div>
       <hr></hr>
