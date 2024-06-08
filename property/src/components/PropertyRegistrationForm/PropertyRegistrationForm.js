@@ -39,9 +39,9 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
       setProperty({
         name: '',
         address: '',
-        phnnumber: 0,
+        phnnumber: '',
         description: '',
-        price: 0,
+        price: '',
         img:''
       });
     } catch (error) {
@@ -52,8 +52,9 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
   return (
     <div className='m-5 p-5'>
       <h2>{property._id ? 'Edit Property' : 'Add Property'}</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className='d-flex m-5'>
         <input
+        className='m-2 form-control w-25'
           type="text"
           name="name"
           placeholder="Name"
@@ -62,6 +63,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           required
         />
         <input
+        className='m-2 form-control w-25'
           type="text"
           name="address"
           placeholder="address"
@@ -70,6 +72,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           required
         />
         <input
+        className='m-2 form-control w-25'
           type="number"
           name="phnnumber"
           placeholder="phn no"
@@ -78,6 +81,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           required
         />
         <input
+        className='m-2 form-control w-25'
           type="text"
           name="description"
           placeholder="description"
@@ -86,6 +90,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           
         />
         <input
+        className='m-2 form-control w-25'
           type="number"
           name="price"
           placeholder="Price"
@@ -93,7 +98,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           onChange={handleChange}
           required
         />
-        <button type="submit">Save</button>
+        <button className='btn btn-success m-3' type="submit">Save</button>
       </form>
     </div>
   );
