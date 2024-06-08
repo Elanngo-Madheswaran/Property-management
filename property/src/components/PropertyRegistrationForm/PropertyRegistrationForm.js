@@ -52,9 +52,9 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
   return (
     <div className='m-5 p-5'>
       <h2>{property._id ? 'Edit Property' : 'Add Property'}</h2>
-      <form onSubmit={handleSubmit} className='d-flex m-5'>
+      <form onSubmit={handleSubmit} className='d-flex m-5 flex-column justify-content-center align-items-center'>
         <input
-        className='m-2 form-control w-25'
+        className='m-2 form-control w-50'
           type="text"
           name="name"
           placeholder="Name"
@@ -62,8 +62,8 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           onChange={handleChange}
           required
         />
-        <input
-        className='m-2 form-control w-25'
+        <textarea
+        className='m-2 form-control-lg w-50'
           type="text"
           name="address"
           placeholder="address"
@@ -72,7 +72,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           required
         />
         <input
-        className='m-2 form-control w-25'
+        className='m-2 form-control w-50'
           type="number"
           name="phnnumber"
           placeholder="phn no"
@@ -80,8 +80,8 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           onChange={handleChange}
           required
         />
-        <input
-        className='m-2 form-control w-25'
+        <textarea
+        className='m-2 form-control-lg w-50'
           type="text"
           name="description"
           placeholder="description"
@@ -90,7 +90,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
           
         />
         <input
-        className='m-2 form-control w-25'
+        className='m-2 form-control w-50'
           type="number"
           name="price"
           placeholder="Price"
