@@ -40,6 +40,16 @@ const PropertyList = ({ onEdit, onDelete }) => {
     setFilteredProperties(sortedProperties);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`http://localhost:5000/property/${id}`);
+      setProperties(Properties.filter(property => property._id !== id));
+      setFilteredProperties(filteredProperties.filter(property => property._id !== id));
+    } catch (error) {
+      console.error('Error deleting property', error);
+    }
+  };
+
   return (
     <div className='d-flex flex-column align-items-center justify-content-center'>
       <div>
@@ -68,6 +78,7 @@ const PropertyList = ({ onEdit, onDelete }) => {
                 <p>Description: {Property.description}</p>
                 <p>Phn no: {Property.phnnumber}</p>
               </div>
+              <button className='btn btn-danger' onClick={() => handleDelete(Property._id)}>Delete</button>
             </div>
           </div>
         ))}
