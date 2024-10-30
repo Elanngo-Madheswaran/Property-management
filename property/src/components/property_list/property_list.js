@@ -59,7 +59,14 @@ const TodoList = ({ onEdit, onDelete }) => {
               <div className='px-5 fs-1 mx-5 mt-3 text-dark'>
                 <p>Description: {task.description}</p>
               </div>
-              <button className='btn btn-danger' onClick={() => handleDelete(task._id)}>Delete</button>
+              <div className='d-flex align-items-center'>
+                <input
+                  type="checkbox"
+                  className='form-check-input'
+                  onChange={() => handleDelete(task._id)}
+                />
+                <label className='form-check-label ms-2'>Delete</label>
+              </div>
             </div>
           </div>
         ))}
