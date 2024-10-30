@@ -18,16 +18,13 @@ const connectDB = async () => {
 
 connectDB();
 
-// Define the Student schema and model
-const PropertySchema = new mongoose.Schema({
+// Define the Task schema and model
+const TaskSchema = new mongoose.Schema({
   name: String,
-  address: String,
-  phnnumber: Number,
   description: String,
-  price: Number,
 });
 
-const Property = mongoose.model('Property', PropertySchema);
+const Task = mongoose.model('Task', TaskSchema);
 
 const server = http.createServer(async (req, res) => {
   const parsedUrl = url.parse(req.url, true);
@@ -43,34 +40,34 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
-  if (req.method === 'GET' && parsedUrl.pathname === '/properties') {
-    // Read all students
+  if (req.method === 'GET' && parsedUrl.pathname === '/tasks') {
+    // Read all tasks
     try {
-      const properties = await Property.find({});
+      const tasks = await Task.find({});
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(properties));
+      res.end(JSON.stringify(tasks));
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end('Server error');
     }
-  } else if (req.method === 'GET' && parsedUrl.pathname.startsWith('/property/')) {
-    // Read a single student by ID
+  } else if (req.method === 'GET' && parsedUrl.pathname.startsWith('/task/')) {
+    // Read a single task by ID
     const id = parsedUrl.pathname.split('/')[2];
     try {
-      const property = await Property.findById(id);
-      if (!property) {
+      const task = await Task.findById(id);
+      if (!task) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Property not found');
+        res.end('Task not found');
       } else {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(property));
+        res.end(JSON.stringify(task));
       }
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });
       res.end('Server error');
     }
-  } else if (req.method === 'POST' && parsedUrl.pathname === '/property') {
-    // Create a new student
+  } else if (req.method === 'POST' && parsedUrl.pathname === '/task') {
+    // Create a new task
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
@@ -78,27 +75,24 @@ const server = http.createServer(async (req, res) => {
 
     req.on('end', async () => {
       try {
-        const { name, address, phnnumber, description, price } = JSON.parse(body);
+        const { name, description } = JSON.parse(body);
 
-        const newProperty = new Property({
+        const newTask = new Task({
           name,
-          address,
-          phnnumber,
           description,
-          price,
         });
 
-        await newProperty.save();
+        await newTask.save();
         res.writeHead(201, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Property created successfully' }));
+        res.end(JSON.stringify({ message: 'Task created successfully' }));
       } catch (error) {
         console.error(error.message);
         res.writeHead(500, { 'Content-Type': 'text/plain' });
         res.end('Server error while saving data');
       }
     });
-  } else if (req.method === 'PUT' && parsedUrl.pathname.startsWith('/property/')) {
-    // Update a student by ID
+  } else if (req.method === 'PUT' && parsedUrl.pathname.startsWith('/task/')) {
+    // Update a task by ID
     const id = parsedUrl.pathname.split('/')[2];
     let body = '';
     req.on('data', chunk => {
@@ -107,18 +101,15 @@ const server = http.createServer(async (req, res) => {
 
     req.on('end', async () => {
       try {
-        const { name, address, phnnumber, description, price} = JSON.parse(body);
-        const updatedProperty = await Property.findByIdAndUpdate(id, { name, address,
-          phnnumber,
-          description,
-          price, }, { new: true });
+        const { name, description } = JSON.parse(body);
+        const updatedTask = await Task.findByIdAndUpdate(id, { name, description }, { new: true });
 
-        if (!updatedProperty) {
+        if (!updatedTask) {
           res.writeHead(404, { 'Content-Type': 'text/plain' });
-          res.end('Property not found');
+          res.end('Task not found');
         } else {
           res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(updatedProperty));
+          res.end(JSON.stringify(updatedTask));
         }
       } catch (error) {
         console.error(error.message);
@@ -126,17 +117,17 @@ const server = http.createServer(async (req, res) => {
         res.end('Server error while updating data');
       }
     });
-  } else if (req.method === 'DELETE' && parsedUrl.pathname.startsWith('/property/')) {
-    // Delete a student by ID
+  } else if (req.method === 'DELETE' && parsedUrl.pathname.startsWith('/task/')) {
+    // Delete a task by ID
     const id = parsedUrl.pathname.split('/')[2];
     try {
-      const property = await Property.findByIdAndDelete(id);
-      if (!property) {
+      const task = await Task.findByIdAndDelete(id);
+      if (!task) {
         res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Property not found');
+        res.end('Task not found');
       } else {
         res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Property deleted successfully' }));
+        res.end(JSON.stringify({ message: 'Task deleted successfully' }));
       }
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'text/plain' });

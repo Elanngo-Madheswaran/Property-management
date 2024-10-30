@@ -1,38 +1,38 @@
 import React, { useState } from 'react';
-import PropertyList from './components/property_list/property_list';
-import PropertyForm from './components/PropertyRegistrationForm/PropertyRegistrationForm';
+import TodoList from './components/property_list/property_list';
+import TodoForm from './components/PropertyRegistrationForm/PropertyRegistrationForm';
 import axios from 'axios';
-const App = () => {
 
-  const [PropertyToEdit, setPropertyToEdit] = useState(null);
-  const handleEdit = (property) => {
-    setPropertyToEdit(property);
+const App = () => {
+  const [taskToEdit, setTaskToEdit] = useState(null);
+
+  const handleEdit = (task) => {
+    setTaskToEdit(task);
   };
-    
 
   const handleDelete = async (id) => {
     try {
-      await axios.delete(`http://localhost:5000/property/${id}`);
-      setPropertyToEdit(null);
+      await axios.delete(`http://localhost:5000/tasks/${id}`);
+      setTaskToEdit(null);
     } catch (error) {
-      console.error('Error deleting property', error);
+      console.error('Error deleting task', error);
     }
   };
 
   const handleSave = () => {
-    setPropertyToEdit(null);
+    setTaskToEdit(null);
   };
 
   return (
     <div className="App text-center bg bg-success bg-opacity-50">
-      <h1 className='p-5'>Property Management System</h1>
+      <h1 className='p-5'>Task Management System</h1>
       <hr></hr>
-      <h1 className='mt-4'>List of Properties</h1>
+      <h1 className='mt-4'>List of Tasks</h1>
       <div className='mt-5 d-flex align-items-center justify-content-center'>
-          <PropertyList onEdit={handleEdit} onDelete={handleDelete} />
+        <TodoList onEdit={handleEdit} onDelete={handleDelete} />
       </div>
       <hr></hr>
-      <PropertyForm propertyToEdit={PropertyToEdit} onSave={handleSave} />
+      <TodoForm taskToEdit={taskToEdit} onSave={handleSave} />
     </div>
   );
 };

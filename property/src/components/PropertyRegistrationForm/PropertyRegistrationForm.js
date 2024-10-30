@@ -1,25 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const PropertyForm = ({ PropertyToEdit, onSave }) => {
-  const [property, setProperty] = useState({
+const TodoForm = ({ taskToEdit, onSave }) => {
+  const [task, setTask] = useState({
     name: '',
-    address: '',
-    phnnumber: 0,
-    description: '',
-    price: 0,
-    img:''
+    description: ''
   });
 
   useEffect(() => {
-    if (PropertyToEdit) {
-      setProperty(PropertyToEdit);
+    if (taskToEdit) {
+      setTask(taskToEdit);
     }
-  }, [PropertyToEdit]);
+  }, [taskToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setProperty(prevState => ({
+    setTask(prevState => ({
       ...prevState,
       [name]: value
     }));
@@ -27,74 +23,51 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Form submitted', task);
 
     try {
-      if (property._id) {
-        await axios.put(`http://localhost:5000/property/${property._id}`, property);
+      if (task._id) {
+        // Update existing task
+        console.log('Updating task', task);
+        await axios.put(`http://localhost:5000/task/${task._id}`, task); // Correct URL for PUT request
       } else {
-        await axios.post('http://localhost:5000/property', property);
+        // Create new task
+        console.log('Creating new task', task);
+        await axios.post('http://localhost:5000/task', task);
       }
 
+      // Call onSave to trigger the parent component update
       onSave();
-      setProperty({
+      
+      // Reset form
+      setTask({
         name: '',
-        address: '',
-        phnnumber: '',
-        description: '',
-        price: '',
-        img:''
+        description: ''
       });
     } catch (error) {
-      console.error('Error saving Property', error);
+      console.error('Error saving task', error);
     }
   };
 
   return (
     <div className='m-5 p-5'>
-      <h2>{property._id ? 'Edit Property' : 'Add Property'}</h2>
+      <h2>{task._id ? 'Edit Task' : 'Add Task'}</h2>
       <form onSubmit={handleSubmit} className='d-flex m-5 flex-column justify-content-center align-items-center'>
         <input
-        className='m-2 form-control w-50'
+          className='m-2 form-control w-50'
           type="text"
           name="name"
-          placeholder="Name"
-          value={property.name}
+          placeholder="Task Name"
+          value={task.name}
           onChange={handleChange}
           required
         />
         <textarea
-        className='m-2 form-control-lg w-50'
-          type="text"
-          name="address"
-          placeholder="address"
-          value={property.address}
-          onChange={handleChange}
-          required
-        />
-        <input
-        className='m-2 form-control w-50'
-          type="number"
-          name="phnnumber"
-          placeholder="phn no"
-          value={property.phnnumber}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-        className='m-2 form-control-lg w-50'
+          className='m-2 form-control-lg w-50'
           type="text"
           name="description"
-          placeholder="description"
-          value={property.description}
-          onChange={handleChange}
-          
-        />
-        <input
-        className='m-2 form-control w-50'
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={property.price}
+          placeholder="Task Description"
+          value={task.description}
           onChange={handleChange}
           required
         />
@@ -104,4 +77,4 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
   );
 };
 
-export default PropertyForm;
+export default TodoForm;
