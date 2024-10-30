@@ -32,14 +32,14 @@ const taskSchema = new mongoose.Schema({
 const Task = mongoose.model('Task', taskSchema);
 
 // Health Check Route
-app.get('/api/health', (req, res) => {
+app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Server is up and running!' });
 });
 
 // API Routes
 
 // Fetch all tasks
-app.get('/api/tasks', async (req, res) => {
+app.get('/tasks', async (req, res) => {
   try {
     const tasks = await Task.find();
     res.json(tasks);
@@ -49,7 +49,7 @@ app.get('/api/tasks', async (req, res) => {
 });
 
 // Create a new task
-app.post('/api/task', async (req, res) => {
+app.post('task', async (req, res) => {
   const newTask = new Task(req.body);
   try {
     const savedTask = await newTask.save();
@@ -60,7 +60,7 @@ app.post('/api/task', async (req, res) => {
 });
 
 // Update a task
-app.put('/api/task/:id', async (req, res) => {
+app.put('task/:id', async (req, res) => {
   try {
     const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.json(updatedTask);
