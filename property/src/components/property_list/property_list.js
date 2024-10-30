@@ -6,6 +6,7 @@ const TodoList = ({ onEdit }) => {
   const [tasks, setTasks] = useState([]);
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isConnected, setIsConnected] = useState(null); // State to track MongoDB connection status
 
   // Fetch tasks on component mount
   useEffect(() => {
@@ -20,14 +21,16 @@ const TodoList = ({ onEdit }) => {
     setFilteredTasks(filtered);
   }, [tasks, searchTerm]);
 
-  // Fetch tasks from the backend
+  // Fetch tasks from the backend and check connection status
   const fetchTasks = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_BASE_URL}/tasks`);
       setTasks(response.data);
       setFilteredTasks(response.data); // Initialize filteredTasks
+      setIsConnected(true); // Set connection status to true if fetch is successful
     } catch (error) {
       console.error('Error fetching tasks', error);
+      setIsConnected(false); // Set connection status to false if there's an error
     }
   };
 
@@ -44,6 +47,15 @@ const TodoList = ({ onEdit }) => {
 
   return (
     <div className="d-flex flex-column align-items-center justify-content-center">
+      {/* Display connection status */}
+      {isConnected === null ? (
+        <p>Checking connection...</p>
+      ) : isConnected ? (
+        <p className="text-success">Connected to MongoDB</p>
+      ) : (
+        <p className="text-danger">Failed to connect to MongoDB</p>
+      )}
+
       <div>
         <input
           type="text"
