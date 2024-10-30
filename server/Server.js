@@ -1,9 +1,14 @@
-const http = require('http');  
-const url = require('url');
+const express = require('express');
 const mongoose = require('mongoose');
 require('dotenv').config();
 
-// Connect Database
+// Initialize Express
+const app = express();
+
+// Middleware
+app.use(express.json()); // Parse JSON bodies
+
+// MongoDB Connection
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.SERVER_MONGODB_URI, {
@@ -17,130 +22,79 @@ const connectDB = async () => {
   }
 };
 
-connectDB();
-
-// Define the Task schema and model
-const TaskSchema = new mongoose.Schema({
-  name: String,
-  description: String,
+// Task Schema
+const taskSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String, required: true },
 });
 
-const Task = mongoose.model('Task', TaskSchema);
+// Task Model
+const Task = mongoose.model('Task', taskSchema);
 
-const server = http.createServer(async (req, res) => {
-  const parsedUrl = url.parse(req.url, true);
+// Health Check Route
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'Server is up and running!' });
+});
 
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+// API Routes
 
-  if (req.method === 'OPTIONS') {
-    res.writeHead(204);
-    res.end();
-    return;
-  }
-
-  if (req.method === 'GET' && parsedUrl.pathname === '/tasks') {
-    // Read all tasks
-    try {
-      const tasks = await Task.find({});
-      res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.end(JSON.stringify(tasks));
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else if (req.method === 'GET' && parsedUrl.pathname.startsWith('/task/')) {
-    // Read a single task by ID
-    const id = parsedUrl.pathname.split('/')[2];
-    try {
-      const task = await Task.findById(id);
-      if (!task) {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Task not found');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify(task));
-      }
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else if (req.method === 'POST' && parsedUrl.pathname === '/task') {
-    // Create a new task
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-
-    req.on('end', async () => {
-      try {
-        const { name, description } = JSON.parse(body);
-
-        const newTask = new Task({
-          name,
-          description,
-        });
-
-        await newTask.save();
-        res.writeHead(201, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Task created successfully' }));
-      } catch (error) {
-        console.error(error.message);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server error while saving data');
-      }
-    });
-  } else if (req.method === 'PUT' && parsedUrl.pathname.startsWith('/task/')) {
-    // Update a task by ID
-    const id = parsedUrl.pathname.split('/')[2];
-    let body = '';
-    req.on('data', chunk => {
-      body += chunk.toString();
-    });
-
-    req.on('end', async () => {
-      try {
-        const { name, description } = JSON.parse(body);
-        const updatedTask = await Task.findByIdAndUpdate(id, { name, description }, { new: true });
-
-        if (!updatedTask) {
-          res.writeHead(404, { 'Content-Type': 'text/plain' });
-          res.end('Task not found');
-        } else {
-          res.writeHead(200, { 'Content-Type': 'application/json' });
-          res.end(JSON.stringify(updatedTask));
-        }
-      } catch (error) {
-        console.error(error.message);
-        res.writeHead(500, { 'Content-Type': 'text/plain' });
-        res.end('Server error while updating data');
-      }
-    });
-  } else if (req.method === 'DELETE' && parsedUrl.pathname.startsWith('/task/')) {
-    // Delete a task by ID
-    const id = parsedUrl.pathname.split('/')[2];
-    try {
-      const task = await Task.findByIdAndDelete(id);
-      if (!task) {
-        res.writeHead(404, { 'Content-Type': 'text/plain' });
-        res.end('Task not found');
-      } else {
-        res.writeHead(200, { 'Content-Type': 'application/json' });
-        res.end(JSON.stringify({ message: 'Task deleted successfully' }));
-      }
-    } catch (err) {
-      res.writeHead(500, { 'Content-Type': 'text/plain' });
-      res.end('Server error');
-    }
-  } else {
-    res.writeHead(404, { 'Content-Type': 'text/plain' });
-    res.end('Route not found');
+// Fetch all tasks
+app.get('/api/tasks', async (req, res) => {
+  try {
+    const tasks = await Task.find();
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching tasks' });
   }
 });
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`Server is running on PORT: ${PORT}`);
+// Create a new task
+app.post('/api/task', async (req, res) => {
+  const newTask = new Task(req.body);
+  try {
+    const savedTask = await newTask.save();
+    res.status(201).json(savedTask);
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating task' });
+  }
 });
+
+// Update a task
+app.put('/api/task/:id', async (req, res) => {
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    res.json(updatedTask);
+  } catch (error) {
+    res.status(400).json({ message: 'Error updating task' });
+  }
+});
+
+// Delete a task
+app.delete('/api/task/:id', async (req, res) => {
+  try {
+    await Task.findByIdAndDelete(req.params.id);
+    res.json({ message: 'Task deleted' });
+  } catch (error) {
+    res.status(400).json({ message: 'Error deleting task' });
+  }
+});
+
+// Start server and connect to MongoDB
+const startServer = async () => {
+  await connectDB();
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+};
+
+// Export the app for Vercel
+module.exports = (req, res) => {
+  startServer();
+  app(req, res);
+};
+
+// Start server locally if needed
+if (process.env.NODE_ENV !== 'production') {
+  startServer();
+}
