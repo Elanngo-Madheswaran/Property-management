@@ -8,7 +8,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: 'https://property-management-ranabjqgo-elanngo-madheswarans-projects.vercel.app/', // Change this to your frontend URL in production
+  origin: 'http://localhost:3000/', // Change this to your frontend URL in production
 }));
 app.use(express.json()); // Parse JSON bodies
 
