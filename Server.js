@@ -1,6 +1,7 @@
 const http = require('http');  
 const url = require('url');
 const mongoose = require('mongoose');
+require('dotenv').config();
 
 // Connect Database
 const connectDB = async () => {
