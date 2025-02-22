@@ -1,7 +1,7 @@
-const http = require('http');  
-const url = require('url');
-const mongoose = require('mongoose');
-const connectDB = require('./Database.js');
+import http from 'http';  
+import url from 'url';
+import mongoose from 'mongoose';
+import connectDB from './Database.js';
 
 connectDB();
 
@@ -33,6 +33,11 @@ const server = http.createServer(async (req, res) => {
     res.end();
     return;
   }
+
+  // Set CORS headers for all responses
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (req.method === 'GET' && parsedUrl.pathname === '/properties') {
     // Read all students

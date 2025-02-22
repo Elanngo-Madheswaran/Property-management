@@ -14,7 +14,7 @@ const PropertyList = ({ onEdit, onDelete }) => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get(process.env.REACT_APP_URI);
+      const response = await axios.get(`${process.env.REACT_APP_URI}/properties`);
       setProperties(response.data);
       setFilteredProperties(response.data); // Initialize filteredProperties
     } catch (error) {
