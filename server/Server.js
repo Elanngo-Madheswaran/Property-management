@@ -1,20 +1,7 @@
 const http = require('http');  
 const url = require('url');
 const mongoose = require('mongoose');
-
-// Connect Database
-const connectDB = async () => {
-  try {
-    await mongoose.connect('', {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-    console.log('MongoDB connected...');
-  } catch (err) {
-    console.error(err.message);
-    process.exit(1);
-  }
-};
+const connectDB = require('./Database.js');
 
 connectDB();
 

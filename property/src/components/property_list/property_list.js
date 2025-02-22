@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+
 const PropertyList = ({ onEdit, onDelete }) => {
   const [Properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -13,7 +14,7 @@ const PropertyList = ({ onEdit, onDelete }) => {
 
   const fetchProperties = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/properties');
+      const response = await axios.get(process.env.REACT_APP_URI);
       setProperties(response.data);
       setFilteredProperties(response.data); // Initialize filteredProperties
     } catch (error) {
