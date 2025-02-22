@@ -1,21 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const PropertyForm = ({ PropertyToEdit, onSave }) => {
+const API_BASE_URL = process.env.REACT_APP_API_URL || "https://property-management-server-chi.vercel.app";
+
+const PropertyForm = ({ propertyToEdit, onSave }) => {
   const [property, setProperty] = useState({
     name: '',
     address: '',
-    phnnumber: 0,
+    phnnumber: '',
     description: '',
-    price: 0,
-    img:''
+    price: '',
+    img: ''
   });
 
   useEffect(() => {
-    if (PropertyToEdit) {
-      setProperty(PropertyToEdit);
+    if (propertyToEdit) {
+      setProperty(propertyToEdit);
     }
-  }, [PropertyToEdit]);
+  }, [propertyToEdit]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -30,9 +32,9 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
 
     try {
       if (property._id) {
-        await axios.put(`${process.env.REACT_APP_URI}/property/${property._id}`, property);
+        await axios.put(`${API_BASE_URL}/properties/${property._id}`, property);
       } else {
-        await axios.post(`${process.env.REACT_APP_URI}/property`, property);
+        await axios.post(`${API_BASE_URL}/properties`, property);
       }
 
       onSave();
@@ -42,7 +44,7 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
         phnnumber: '',
         description: '',
         price: '',
-        img:''
+        img: ''
       });
     } catch (error) {
       console.error('Error saving Property', error);
@@ -53,51 +55,11 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
     <div className='m-5 p-5'>
       <h2>{property._id ? 'Edit Property' : 'Add Property'}</h2>
       <form onSubmit={handleSubmit} className='d-flex m-5 flex-column justify-content-center align-items-center'>
-        <input
-        className='m-2 form-control w-50'
-          type="text"
-          name="name"
-          placeholder="Name"
-          value={property.name}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-        className='m-2 form-control-lg w-50'
-          type="text"
-          name="address"
-          placeholder="address"
-          value={property.address}
-          onChange={handleChange}
-          required
-        />
-        <input
-        className='m-2 form-control w-50'
-          type="number"
-          name="phnnumber"
-          placeholder="phn no"
-          value={property.phnnumber}
-          onChange={handleChange}
-          required
-        />
-        <textarea
-        className='m-2 form-control-lg w-50'
-          type="text"
-          name="description"
-          placeholder="description"
-          value={property.description}
-          onChange={handleChange}
-          
-        />
-        <input
-        className='m-2 form-control w-50'
-          type="number"
-          name="price"
-          placeholder="Price"
-          value={property.price}
-          onChange={handleChange}
-          required
-        />
+        <input className='m-2 form-control w-50' type="text" name="name" placeholder="Name" value={property.name} onChange={handleChange} required />
+        <textarea className='m-2 form-control-lg w-50' name="address" placeholder="Address" value={property.address} onChange={handleChange} required />
+        <input className='m-2 form-control w-50' type="number" name="phnnumber" placeholder="Phone Number" value={property.phnnumber} onChange={handleChange} required />
+        <textarea className='m-2 form-control-lg w-50' name="description" placeholder="Description" value={property.description} onChange={handleChange} />
+        <input className='m-2 form-control w-50' type="number" name="price" placeholder="Price" value={property.price} onChange={handleChange} required />
         <button className='btn btn-success m-3' type="submit">Save</button>
       </form>
     </div>
