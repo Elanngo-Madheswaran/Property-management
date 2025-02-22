@@ -30,6 +30,8 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  console.log(`Received request: ${req.method} ${req.url}`);
+
   if (req.method === 'GET' && parsedUrl.pathname === '/properties') {
     // Read all students
     try {
