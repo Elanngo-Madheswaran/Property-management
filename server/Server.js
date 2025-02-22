@@ -27,12 +27,6 @@ const server = http.createServer(async (req, res) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-  if (req.method === 'OPTIONS') {
-    console.log("Pre-flight request received");
-    res.writeHead(204);
-    res.end();
-    return;
-  }
 
   if (req.method === 'GET' && parsedUrl.pathname === '/properties') {
     try {
