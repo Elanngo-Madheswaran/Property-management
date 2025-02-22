@@ -30,9 +30,9 @@ const PropertyForm = ({ PropertyToEdit, onSave }) => {
 
     try {
       if (property._id) {
-        await axios.put(`http://localhost:5000/property/${property._id}`, property);
+        await axios.put(`${process.env.REACT_APP_URI}/property/${property._id}`, property);
       } else {
-        await axios.post('http://localhost:5000/property', property);
+        await axios.post(`${process.env.REACT_APP_URI}/property`, property);
       }
 
       onSave();
