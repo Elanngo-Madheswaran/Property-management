@@ -5,7 +5,12 @@
     ],
     "routes": [
       { "src": "/properties", "dest": "/Server.js" },
-      { "src": "/property/(.*)", "dest": "/Server.js" }
+      { "src": "/property/(.*)", "dest": "/Server.js" },
+      { "src": "/property", "dest": "/Server.js" },
+      { "src": "/properties/(.*)", "dest": "/Server.js" },
+      { "src": "/tasks/(.*)", "dest": "/Server.js" },
+      { "src": "/tasks", "dest": "/Server.js" },
+      { "src": "/(.*)", "dest": "/Server.js" }
     ]
   }
   
