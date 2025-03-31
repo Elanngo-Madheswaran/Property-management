@@ -44,25 +44,30 @@ const Task = mongoose.model('Task', TaskSchema);
 
 
 app.get('/', (req, res) => {
-  res.status(200).json({
-    message: 'Server is running!',
-    availableRoutes: {
-      properties: {
-        getAll: '/properties',
-        getById: '/properties/:id',
-        create: '/properties',
-        update: '/properties/:id',
-        delete: '/properties/:id',
-      },
-      tasks: {
-        getAll: '/tasks',
-        create: '/tasks',
-        update: '/tasks/:id',
-        delete: '/tasks/:id',
-      },
-      healthCheck: '/health',
-    },
-  });
+  res.send(`
+    <h1>Server is running!</h1>
+    <h2>Available Routes:</h2>
+    <ul>
+      <li><strong>Properties:</strong>
+        <ul>
+          <li>Get All: <code>/properties</code></li>
+          <li>Get By ID: <code>/properties/:id</code></li>
+          <li>Create: <code>/properties</code></li>
+          <li>Update: <code>/properties/:id</code></li>
+          <li>Delete: <code>/properties/:id</code></li>
+        </ul>
+      </li>
+      <li><strong>Tasks:</strong>
+        <ul>
+          <li>Get All: <code>/tasks</code></li>
+          <li>Create: <code>/tasks</code></li>
+          <li>Update: <code>/tasks/:id</code></li>
+          <li>Delete: <code>/tasks/:id</code></li>
+        </ul>
+      </li>
+      <li><strong>Health Check:</strong> <code>/health</code></li>
+    </ul>
+  `);
 });
 // Routes for Properties
 app.get('/properties', async (req, res) => {
