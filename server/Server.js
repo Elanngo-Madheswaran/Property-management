@@ -50,7 +50,7 @@ app.get('/', (req, res) => {
     <ul>
       <li><strong>Properties:</strong>
         <ul>
-          <li>Get All: <code>/properties</code></li>
+          <li>Get All: <a href="/properties"><code>/properties</code></a></li>
           <li>Get By ID: <code>/properties/:id</code></li>
           <li>Create: <code>/properties</code></li>
           <li>Update: <code>/properties/:id</code></li>
@@ -59,13 +59,13 @@ app.get('/', (req, res) => {
       </li>
       <li><strong>Tasks:</strong>
         <ul>
-          <li>Get All: <code>/tasks</code></li>
+          <li>Get All: <a href="/tasks"><code>/tasks</code></a></li>
           <li>Create: <code>/tasks</code></li>
           <li>Update: <code>/tasks/:id</code></li>
           <li>Delete: <code>/tasks/:id</code></li>
         </ul>
       </li>
-      <li><strong>Health Check:</strong> <code>/health</code></li>
+      <li><strong>Health Check:</strong> <a href="/health"><code>/health</code></a></li>
     </ul>
   `);
 });
