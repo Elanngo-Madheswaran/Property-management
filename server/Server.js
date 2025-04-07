@@ -43,29 +43,36 @@ const TaskSchema = new mongoose.Schema({
 const Task = mongoose.model('Task', TaskSchema);
 
 
+const listRoutes = (app) => {
+  const routes = [];
+  app._router.stack.forEach((middleware) => {
+    if (middleware.route) {
+      // Routes registered directly on the app
+      routes.push(middleware.route);
+    } else if (middleware.name === 'router') {
+      // Routes added as router middleware
+      middleware.handle.stack.forEach((handler) => {
+        if (handler.route) {
+          routes.push(handler.route);
+        }
+      });
+    }
+  });
+  return routes;
+};
+
 app.get('/', (req, res) => {
+  const routes = listRoutes(app);
+  const formattedRoutes = routes.map((route) => {
+    const methods = Object.keys(route.methods).join(', ').toUpperCase();
+    return `<li><strong>${methods}:</strong> <a href="${route.path}">${route.path}</a></li>`;
+  });
+
   res.send(`
     <h1>Server is running!</h1>
     <h2>Available Routes:</h2>
     <ul>
-      <li><strong>Properties:</strong>
-        <ul>
-          <li>Get All: <a href="/properties"><code>/properties</code></a></li>
-          <li>Get By ID: <code>/properties/:id</code></li>
-          <li>Create: <code>/properties</code></li>
-          <li>Update: <code>/properties/:id</code></li>
-          <li>Delete: <code>/properties/:id</code></li>
-        </ul>
-      </li>
-      <li><strong>Tasks:</strong>
-        <ul>
-          <li>Get All: <a href="/tasks"><code>/tasks</code></a></li>
-          <li>Create: <code>/tasks</code></li>
-          <li>Update: <code>/tasks/:id</code></li>
-          <li>Delete: <code>/tasks/:id</code></li>
-        </ul>
-      </li>
-      <li><strong>Health Check:</strong> <a href="/health"><code>/health</code></a></li>
+      ${formattedRoutes.join('')}
     </ul>
   `);
 });
@@ -164,6 +171,55 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Server is up and running!' });
 });
 
+// Event Schema and Model
+const EventSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  eventDate: { type: Date, required: true },
+  description: { type: String, required: true },
+  img: { type: String, required: true },
+});
+const Event = mongoose.model('Event', EventSchema);
+
+// Routes for Events
+app.get('/events', async (req, res) => {
+  try {
+    const events = await Event.find();
+    res.json(events);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching events' });
+  }
+});
+
+app.post('/events', async (req, res) => {
+  try {
+    const newEvent = new Event(req.body);
+    const savedEvent = await newEvent.save();
+    res.status(201).json(savedEvent);
+  } catch (error) {
+    res.status(400).json({ message: 'Error creating event' });
+  }
+});
+
+app.put('/events/:id', async (req, res) => {
+  try {
+    const updatedEvent = await Event.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!updatedEvent) return res.status(404).json({ message: 'Event not found' });
+    res.json(updatedEvent);
+  } catch (error) {
+    res.status(400).json({ message: 'Error updating event' });
+  }
+});
+
+app.delete('/events/:id', async (req, res) => {
+  try {
+    const deletedEvent = await Event.findByIdAndDelete(req.params.id);
+    if (!deletedEvent) return res.status(404).json({ message: 'Event not found' });
+    res.json({ message: 'Event deleted successfully' });
+  } catch (error) {
+    res.status(400).json({ message: 'Error deleting event' });
+  }
+});
+
 // Start server and connect to MongoDB
 const startServer = async () => {
   await connectDB();
@@ -171,5 +227,8 @@ const startServer = async () => {
     console.log(`Server running on PORT: ${PORT}`);
   });
 };
+
+
+
 
 startServer();
