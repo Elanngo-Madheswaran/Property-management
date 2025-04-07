@@ -190,6 +190,16 @@ app.get('/events', async (req, res) => {
   }
 });
 
+app.get('/events/:id', async (req, res) => {
+  try {
+    const event = await Event.findById(req.params.id);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    res.json(event);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching event' });
+  }
+});
+
 app.post('/events', async (req, res) => {
   try {
     const newEvent = new Event(req.body);
