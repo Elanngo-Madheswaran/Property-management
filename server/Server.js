@@ -10,8 +10,8 @@ const PORT = process.env.PORT || 5000;
 const connectDB = async () => {
   try {
     await mongoose.connect(process.env.SERVER_MONGODB_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
+    //   useNewUrlParser: true, // Deprecated
+    //   useUnifiedTopology: true, // Deprecated
     });
     console.log('MongoDB connected...');
   } catch (err) {
@@ -24,6 +24,7 @@ const connectDB = async () => {
 app.use(cors()); // Enable CORS for all requests
 app.use(express.json()); // Parse JSON requests
 
+// ...existing code...
 // Property Schema and Model
 const PropertySchema = new mongoose.Schema({
   name: String,
@@ -41,6 +42,26 @@ const TaskSchema = new mongoose.Schema({
   description: { type: String, required: true },
 });
 const Task = mongoose.model('Task', TaskSchema);
+
+// Event Schema and Model
+const EventSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  eventDate: { type: Date, required: true },
+  description: { type: String, required: true },
+  img: { type: String, required: true },
+});
+const Event = mongoose.model('Event', EventSchema);
+
+// Monty Hall Stats Schema and Model
+const MontyHallStatsSchema = new mongoose.Schema({
+    identifier: { type: String, default: 'global_stats', unique: true, required: true },
+    switchedWins: { type: Number, default: 0 },
+    switchedLosses: { type: Number, default: 0 },
+    notSwitchedWins: { type: Number, default: 0 },
+    notSwitchedLosses: { type: Number, default: 0 },
+    lastUpdatedAt: { type: Date, default: Date.now }
+});
+const MontyHallStats = mongoose.model('MontyHallStats', MontyHallStatsSchema);
 
 
 const listRoutes = (app) => {
@@ -111,7 +132,8 @@ app.put('/properties/:id', async (req, res) => {
     const updatedProperty = await Property.findByIdAndUpdate(req.params.id, req.body, { new: true });
     if (!updatedProperty) return res.status(404).json({ error: 'Property not found' });
     res.json(updatedProperty);
-  } catch (err) {
+  } catch (err)
+{
     res.status(500).json({ error: 'Error updating property' });
   }
 });
@@ -170,16 +192,6 @@ app.delete('/tasks/:id', async (req, res) => {
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'Server is up and running!' });
 });
-
-// Event Schema and Model
-const EventSchema = new mongoose.Schema({
-  name: { type: String, required: true },
-  eventDate: { type: Date, required: true },
-  description: { type: String, required: true },
-  img: { type: String, required: true },
-});
-const Event = mongoose.model('Event', EventSchema);
-
 // Routes for Events
 app.get('/events', async (req, res) => {
   try {
@@ -230,6 +242,58 @@ app.delete('/events/:id', async (req, res) => {
   }
 });
 
+// --- Monty Hall Stats Routes ---
+// GET global Monty Hall stats
+app.get('/api/montyhall/stats', async (req, res) => {
+    try {
+        let stats = await MontyHallStats.findOne({ identifier: 'global_stats' });
+        if (!stats) {
+            // Create initial stats document if it doesn't exist
+            stats = new MontyHallStats({ identifier: 'global_stats' });
+            await stats.save();
+        }
+        res.json(stats);
+    } catch (err) {
+        console.error('Error fetching Monty Hall stats:', err);
+        res.status(500).json({ error: 'Server error fetching stats' });
+    }
+});
+
+// POST to record a game outcome and update stats
+app.post('/api/montyhall/stats/record', async (req, res) => {
+    const { strategy, outcome } = req.body; // strategy: 'switched' or 'notSwitched'; outcome: 'win' or 'loss'
+
+    if (!['switched', 'notSwitched'].includes(strategy) || !['win', 'loss'].includes(outcome)) {
+        return res.status(400).json({ error: 'Invalid strategy or outcome provided.' });
+    }
+
+    let fieldToIncrement;
+    if (strategy === 'switched' && outcome === 'win') fieldToIncrement = 'switchedWins';
+    else if (strategy === 'switched' && outcome === 'loss') fieldToIncrement = 'switchedLosses';
+    else if (strategy === 'notSwitched' && outcome === 'win') fieldToIncrement = 'notSwitchedWins';
+    else if (strategy === 'notSwitched' && outcome === 'loss') fieldToIncrement = 'notSwitchedLosses';
+    else { 
+        // This case should ideally not be reached due to prior validation
+        return res.status(400).json({ error: 'Could not determine field to increment.' });
+    }
+    
+    try {
+        const updatedStats = await MontyHallStats.findOneAndUpdate(
+            { identifier: 'global_stats' },
+            { 
+                $inc: { [fieldToIncrement]: 1 },
+                $set: { lastUpdatedAt: Date.now() }
+            },
+            { new: true, upsert: true } // upsert: true creates the document if it doesn't exist
+        );
+        res.json(updatedStats);
+    } catch (err) {
+        console.error('Error updating Monty Hall stats:', err);
+        res.status(500).json({ error: 'Server error updating stats' });
+    }
+});
+// --- End of Monty Hall Stats Routes ---
+
 // Start server and connect to MongoDB
 const startServer = async () => {
   await connectDB();
@@ -237,8 +301,5 @@ const startServer = async () => {
     console.log(`Server running on PORT: ${PORT}`);
   });
 };
-
-
-
 
 startServer();
